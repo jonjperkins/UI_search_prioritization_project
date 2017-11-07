@@ -13,7 +13,8 @@ class App extends Component {
       country: ["ALL"],
       device: ["ALL"],
       results: [],
-      key: 0
+      key: 0, 
+      error_message: ""
     }
     this.handleUpdateCountry = this.handleUpdateCountry.bind(this);
     this.handleUpdateDevice = this.handleUpdateDevice.bind(this);
@@ -22,87 +23,7 @@ class App extends Component {
   componentDidMount() {
     this.handleUpdateResults();
   }
-  handleUpdateCountry(event) {
-    var checkboxValue = event.target.value;
-    var currentCountryState = this.state.country;
-
-    console.log('checkbox value: ' + checkboxValue)
-
-    if ( currentCountryState.length === 1 && currentCountryState.indexOf(checkboxValue) > -1  ) {
-        this.setState({ country: ["ALL"] }, this.handleUpdateResults) 
-    } 
-
-    else if ( checkboxValue !== "ALL" && currentCountryState.indexOf("ALL") > -1 ) {
-      checkboxValue = [checkboxValue]
-      this.setState({ country: checkboxValue }, this.handleUpdateResults) 
-    } 
-    
-    else if ( checkboxValue === "ALL" && currentCountryState.indexOf("ALL") === -1 ) {
-      this.setState({ country: ["ALL"] }, this.handleUpdateResults) 
-    } 
-
-    else if (currentCountryState.indexOf(checkboxValue) === -1 && currentCountryState.indexOf("ALL") === -1 && currentCountryState.length > 0) {
-      this.setState({ country: [...currentCountryState, checkboxValue]}, this.handleUpdateResults)
-    }
-
-    else if (currentCountryState.indexOf(checkboxValue) > -1 && currentCountryState.indexOf("ALL") === -1) {
-      console.log("delete");
-      var index = currentCountryState.indexOf(checkboxValue);
-      currentCountryState.splice(index, 1);
-      var newCountryState = currentCountryState
-      this.setState({ country: newCountryState }, this.handleUpdateResults)
-    }
-
-    else if (currentCountryState.indexOf("ALL") > -1 && checkboxValue === "ALL") {
-      this.setState({ country: [] }, this.handleUpdateResults);
-    }
-  
-    else {
-      checkboxValue = [checkboxValue]
-      this.setState({ country: checkboxValue }, this.handleUpdateResults) 
-    }
-  }
-handleUpdateDevice(event) {
-    var checkboxValue = event.target.value;
-    var currentDeviceState = this.state.device;
-
-    console.log('checkbox value: ' + checkboxValue)
-
-    if ( currentDeviceState.length === 1 && currentDeviceState.indexOf(checkboxValue) > -1  ) {
-      this.setState({ device: ["ALL"] }, this.handleUpdateResults)
-    } 
-
-    else if ( checkboxValue !== "ALL" && currentDeviceState.indexOf("ALL") > -1 ) {
-      checkboxValue = [checkboxValue]
-      this.setState({ device: checkboxValue }, this.handleUpdateResults) 
-    } 
-    
-    else if ( checkboxValue === "ALL" && currentDeviceState.indexOf("ALL") === -1 ) {
-      this.setState({ device: ["ALL"] }, this.handleUpdateResults) 
-    } 
-
-    else if (currentDeviceState.indexOf(checkboxValue) === -1 && currentDeviceState.indexOf("ALL") === -1 && currentDeviceState.length > 0) {
-      this.setState({ device: [...currentDeviceState, checkboxValue]}, this.handleUpdateResults)
-    }
-
-    else if (currentDeviceState.indexOf(checkboxValue) > -1 && currentDeviceState.indexOf("ALL") === -1) {
-      var index = currentDeviceState.indexOf(checkboxValue);
-      currentDeviceState.splice(index, 1);
-      var newDeviceState = currentDeviceState
-      this.setState({ device: newDeviceState }, this.handleUpdateResults) 
-    }
-
-    else if (currentDeviceState.indexOf("ALL") > -1 && checkboxValue === "ALL") {
-      this.setState({ device: [] }, this.handleUpdateResults);
-    }
-  
-    else {
-      checkboxValue = [checkboxValue]
-      this.setState({ device: checkboxValue }, this.handleUpdateResults) 
-    }
-  }
   handleUpdateResults() {
-    console.log(JSON.stringify({ country: this.state.country, device: this.state.device }))
     var request = new Request("http://localhost:8080/", {
       method: "POST",
       headers: new Headers({
@@ -115,9 +36,74 @@ handleUpdateDevice(event) {
     .then((response) => {
       response.text().then(text => {
         var testerArray = JSON.parse(text)
-        this.setState({ results: testerArray})
+        if (testerArray[0].error === "error") {
+          this.setState({ error_message: testerArray[1].message })
+        } else {
+          this.setState({ results: testerArray, error_message: false })
+        }
       })
     })
+  }
+  handleUpdateCountry(event) {
+    var checkboxValue = event.target.value;
+    var currentCountryState = this.state.country;
+    if ( currentCountryState.length === 1 && currentCountryState.indexOf(checkboxValue) > -1  ) {
+        this.setState({ country: ["ALL"] }, this.handleUpdateResults) 
+    } 
+    else if ( checkboxValue !== "ALL" && currentCountryState.indexOf("ALL") > -1 ) {
+      checkboxValue = [checkboxValue]
+      this.setState({ country: checkboxValue }, this.handleUpdateResults) 
+    } 
+    else if ( checkboxValue === "ALL" && currentCountryState.indexOf("ALL") === -1 ) {
+      this.setState({ country: ["ALL"] }, this.handleUpdateResults) 
+    } 
+    else if (currentCountryState.indexOf(checkboxValue) === -1 && currentCountryState.indexOf("ALL") === -1 && currentCountryState.length > 0) {
+      this.setState({ country: [...currentCountryState, checkboxValue]}, this.handleUpdateResults)
+    }
+    else if (currentCountryState.indexOf(checkboxValue) > -1 && currentCountryState.indexOf("ALL") === -1) {
+      console.log("delete");
+      var index = currentCountryState.indexOf(checkboxValue);
+      currentCountryState.splice(index, 1);
+      var newCountryState = currentCountryState
+      this.setState({ country: newCountryState }, this.handleUpdateResults)
+    }
+    else if (currentCountryState.indexOf("ALL") > -1 && checkboxValue === "ALL") {
+      this.setState({ country: [] }, this.handleUpdateResults);
+    }
+    else {
+      checkboxValue = [checkboxValue]
+      this.setState({ country: checkboxValue }, this.handleUpdateResults) 
+    }
+  }
+handleUpdateDevice(event) {
+    var checkboxValue = event.target.value;
+    var currentDeviceState = this.state.device;
+    if ( currentDeviceState.length === 1 && currentDeviceState.indexOf(checkboxValue) > -1  ) {
+      this.setState({ device: ["ALL"] }, this.handleUpdateResults)
+    } 
+    else if ( checkboxValue !== "ALL" && currentDeviceState.indexOf("ALL") > -1 ) {
+      checkboxValue = [checkboxValue]
+      this.setState({ device: checkboxValue }, this.handleUpdateResults) 
+    } 
+    else if ( checkboxValue === "ALL" && currentDeviceState.indexOf("ALL") === -1 ) {
+      this.setState({ device: ["ALL"] }, this.handleUpdateResults) 
+    } 
+    else if (currentDeviceState.indexOf(checkboxValue) === -1 && currentDeviceState.indexOf("ALL") === -1 && currentDeviceState.length > 0) {
+      this.setState({ device: [...currentDeviceState, checkboxValue]}, this.handleUpdateResults)
+    }
+    else if (currentDeviceState.indexOf(checkboxValue) > -1 && currentDeviceState.indexOf("ALL") === -1) {
+      var index = currentDeviceState.indexOf(checkboxValue);
+      currentDeviceState.splice(index, 1);
+      var newDeviceState = currentDeviceState
+      this.setState({ device: newDeviceState }, this.handleUpdateResults) 
+    }
+    else if (currentDeviceState.indexOf("ALL") > -1 && checkboxValue === "ALL") {
+      this.setState({ device: [] }, this.handleUpdateResults);
+    }
+    else {
+      checkboxValue = [checkboxValue]
+      this.setState({ device: checkboxValue }, this.handleUpdateResults) 
+    }
   }
   render() {
     return (
@@ -141,13 +127,13 @@ handleUpdateDevice(event) {
                 results={this.state.results}
                 country={this.state.country}
                 device={this.state.device}
+                error_message={this.state.error_message}
                 />
             </Row>
           </Col>
           <Col xsHidden sm={1} />
         </Row>
       </Grid>
-
     );
   }
 }

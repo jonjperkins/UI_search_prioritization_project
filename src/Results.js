@@ -11,7 +11,9 @@ class Results extends Component {
 	  		<Row>
 	  			<Col xs={12} sm={10} style={{border: "1px solid #f2f2f2", borderRadius: "3px", marginTop: "20px"}}>
 	  			<h2>Results</h2>
-	  			
+	  			{ this.props.error_message.length > 0 &&
+	  				<h5 style={{color: "red"}}>{this.props.error_message}</h5>
+	  			}
 	  			{ (this.props.country.length > 0 || this.props.device.length) > 0 &&
                    
 	  				<Table striped bordered condensed hover responsive>
