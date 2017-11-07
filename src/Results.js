@@ -1,25 +1,44 @@
 import React, { Component } from 'react';
 import './App.css';
 
-import {Grid, Row, Col, FormGroup, Checkbox} from 'react-bootstrap';
+import {Grid, Row, Col, FormGroup, Checkbox, Table} from 'react-bootstrap';
+import moment from 'moment';
 
 class Results extends Component {
   render() {
     return (
     	<Grid>
 	  		<Row>
+	  			<Col xs={12} sm={10} style={{border: "1px solid #f2f2f2", borderRadius: "3px", marginTop: "20px"}}>
 	  			<h2>Results</h2>
-
+	  			
 	  			{ (this.props.country.length > 0 || this.props.device.length) > 0 &&
-                  
-	  				<ul>
+                   
+	  				<Table striped bordered condensed hover responsive>
+	  					<thead>
+					      <tr>
+					        <th>First Name</th>
+					        <th>Last Name</th>
+					        <th>Country</th>
+					        <th>Last Login</th>
+					      </tr>
+					    </thead>
+					    <tbody>
 		  				{ this.props.results.map((result) => 
-		  					<li> {result.firstName} </li>
+		  					<tr>
+		  						<td>{result.firstName}</td>
+		  						<td>{result.lastName}</td>
+		  						<td>{result.country}</td>
+		  						<td>{moment(result.lastLogin).format("LLL")}</td>
+		  					</tr>
 		  					)
 		  				}	
-	          </ul>
+		  				</tbody>
+	          </Table>
 
 	        }
+	        </Col>
+	        <Col xsHidden sm={1} />
 	  		</Row>
 	  	</Grid>
     );
